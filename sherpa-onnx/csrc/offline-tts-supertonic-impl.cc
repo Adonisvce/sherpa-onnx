@@ -559,13 +559,17 @@ GeneratedAudio OfflineTtsSupertonicImpl::ProcessChunksAndConcatenate(
     if (chunk_result.samples.empty()) {
       continue;
     }
+    bool should_continue = true;
     if (callback) {
       float progress =
           static_cast<float>(i + 1) / static_cast<float>(num_chunks);
-      callback(chunk_result.samples.data(), chunk_result.samples.size(),
-               progress);
+      should_continue = callback(chunk_result.samples.data(),
+                                 chunk_result.samples.size(), progress);
     }
     chunk_samples.push_back(std::move(chunk_result.samples));
+    if (!should_continue) {
+      break;
+    }
   }
 
   if (chunk_samples.empty()) {
